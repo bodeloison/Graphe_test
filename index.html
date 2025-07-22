@@ -2,90 +2,100 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Graphique wARENH vs woARENH</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Graphique ARENH</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #fff;
       margin: 0;
       padding: 40px;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #ffffff;
-      color: #333;
+      color: #1c1c1c;
     }
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
-      padding: 30px;
-      border-radius: 20px;
       background: #f9f9f9;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
     }
-    h2 {
+    h1 {
       text-align: center;
       color: #5a52ff;
+      font-size: 24px;
+      margin-bottom: 40px;
     }
-    #chart {
+    canvas {
       max-width: 100%;
-      height: auto;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📊 Évolution des valeurs wARENH et woARENH</h2>
-    <canvas id="chart"></canvas>
+    <h1>📊 Évolution des valeurs wARENH et woARENH</h1>
+    <canvas id="myChart"></canvas>
   </div>
 
   <script>
-    fetch("https://script.google.com/macros/s/AKfycbw6Qq8nng7mKnoT9C_LCmpvd6JekQTYe9WMI5LWjuba5itj-nsPDPSxYem9TKs3Ddhn/exec")
+    fetch("https://script.google.com/macros/s/AKfycbxIqA1HjBZH_MjPl7PtDDoSnAMT5YEgX9MZo6j5aqniq-Ljz69070q61tzk6jQUCa0/exec")
       .then(response => response.json())
       .then(data => {
-        const ctx = document.getElementById('chart').getContext('2d');
+        const labels = data.map(row => row.Date);
+        const wARENH = data.map(row => parseFloat(row.wARENH));
+        const woARENH = data.map(row => parseFloat(row.woARENH));
 
+        const ctx = document.getElementById("myChart").getContext("2d");
         new Chart(ctx, {
-          type: 'line',
+          type: "line",
           data: {
-            labels: data.map(row => row.periode),
+            labels: labels,
             datasets: [
               {
-                label: 'wARENH',
-                data: data.map(row => parseFloat(row.warenh)),
-                borderColor: '#00bfa6',
-                backgroundColor: 'rgba(0,191,166,0.15)',
+                label: "wARENH",
+                data: wARENH,
+                borderColor: "#0fc4b2",
+                backgroundColor: "rgba(15, 196, 178, 0.2)",
+                tension: 0.3,
                 fill: true,
-                tension: 0.3
               },
               {
-                label: 'woARENH',
-                data: data.map(row => parseFloat(row.woarenh)),
-                borderColor: '#e57399',
-                backgroundColor: 'rgba(229,115,153,0.15)',
+                label: "woARENH",
+                data: woARENH,
+                borderColor: "#ff6c95",
+                backgroundColor: "rgba(255, 108, 149, 0.2)",
+                tension: 0.3,
                 fill: true,
-                tension: 0.3
-              }
-            ]
+              },
+            ],
           },
           options: {
             responsive: true,
             plugins: {
               legend: {
-                position: 'top',
+                position: "top",
                 labels: {
+                  color: "#1c1c1c",
                   font: {
-                    size: 14
-                  }
-                }
+                    size: 14,
+                  },
+                },
               },
-              title: {
-                display: false
-              }
             },
             scales: {
+              x: {
+                ticks: {
+                  color: "#1c1c1c",
+                },
+              },
               y: {
-                beginAtZero: false
-              }
-            }
-          }
+                ticks: {
+                  color: "#1c1c1c",
+                },
+              },
+            },
+          },
         });
       })
       .catch(error => {
@@ -94,3 +104,4 @@
   </script>
 </body>
 </html>
+
