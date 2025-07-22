@@ -2,46 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Graphique ARENH</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test Graphique ARENH</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #fff;
-      margin: 0;
-      padding: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      background: #f7f7f7;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-      max-width: 900px;
-      width: 100%;
-    }
-
-    h2 {
-      text-align: center;
-      color: #5a52ff;
-      margin-bottom: 40px;
-      font-size: 28px;
-    }
-
-    canvas {
-      max-width: 100%;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📊 Évolution des valeurs wARENH et woARENH</h2>
-    <canvas id="graphique"></canvas>
-  </div>
+  <h2>📊 Évolution des valeurs wARENH et woARENH</h2>
+  <canvas id="graphique" width="800" height="400"></canvas>
 
   <script>
     async function fetchData() {
@@ -49,31 +16,30 @@
       const response = await fetch(url);
       const data = await response.json();
 
-      const labels = data.map(row => row.Date);
-      const wARENHDatas = data.map(row => row.wARENH);
-      const woARENHDatas = data.map(row => row.woARENH);
+      console.log('Données reçues:', data);
 
-      const ctx = document.getElementById("graphique").getContext("2d");
+      const labels = data.map(row => row.Date);
+      const wARENHDatas = data.map(row => parseFloat(row.wARENH));
+      const woARENHDatas = data.map(row => parseFloat(row.woARENH));
+
+      const ctx = document.getElementById('graphique').getContext('2d');
+
       new Chart(ctx, {
-        type: "line",
+        type: 'line',
         data: {
           labels: labels,
           datasets: [
             {
-              label: "wARENH",
+              label: 'wARENH',
               data: wARENHDatas,
-              borderColor: "#5a52ff",
-              backgroundColor: "#5a52ff33",
-              borderWidth: 3,
+              borderColor: '#5a52ff',
               fill: false,
               tension: 0.3
             },
             {
-              label: "woARENH",
+              label: 'woARENH',
               data: woARENHDatas,
-              borderColor: "#0fc4b2",
-              backgroundColor: "#0fc4b233",
-              borderWidth: 3,
+              borderColor: '#0fc4b2',
               fill: false,
               tension: 0.3
             }
@@ -81,33 +47,13 @@
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: {
-              labels: {
-                font: {
-                  size: 14
-                }
-              }
-            }
-          },
           scales: {
             y: {
-              title: {
-                display: true,
-                text: 'Valeurs',
-                font: {
-                  size: 14
-                }
-              }
+              beginAtZero: false,
+              title: { display: true, text: 'Valeurs' }
             },
             x: {
-              title: {
-                display: true,
-                text: 'Semestre',
-                font: {
-                  size: 14
-                }
-              }
+              title: { display: true, text: 'Date' }
             }
           }
         }
@@ -118,5 +64,3 @@
   </script>
 </body>
 </html>
-
-
