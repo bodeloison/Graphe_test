@@ -1,109 +1,122 @@
-<!-- index.html complet et stylé - à coller sur GitHub Pages ou WordPress -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Graphique ARENH</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-<!-- Intégration de Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    .container {
+      background: #f7f7f7;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+      max-width: 900px;
+      width: 100%;
+    }
 
-<!-- Conteneur responsive -->
-<div style="max-width: 900px; margin: 40px auto; padding: 20px; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); font-family: 'Segoe UI', sans-serif;">
-  <h2 style="color: #5a52ff; text-align: center; font-size: 24px; margin-bottom: 30px;">
-    📈 Evolution des données énergie - Actualisé chaque jour
-  </h2>
+    h2 {
+      text-align: center;
+      color: #5a52ff;
+      margin-bottom: 40px;
+      font-size: 28px;
+    }
 
-  <div style="position: relative; height: 400px;">
-    <canvas id="papernestChart"></canvas>
+    canvas {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📊 Évolution des valeurs wARENH et woARENH</h2>
+    <canvas id="graphique"></canvas>
   </div>
-</div>
 
-<script>
-// Ton lien Apps Script JSON (DOIT être public et bien configuré)
-const url = "https://script.google.com/macros/s/AKfycbw6Qq8nng7mKnoT9C_LCmpvd6JekQTYe9WMl5LWjubq5itj-nsPDPSxYem9TKs3Ddhn/exec";
+  <script>
+    async function fetchData() {
+      const url = "https://script.google.com/macros/s/AKfycbw6Qq8nng7mKnoT9C_LCmpvd6JekQTYe9WMl5LWjubq5itj-nsPDPSxYem9TKs3Ddhn/exec";
+      const response = await fetch(url);
+      const data = await response.json();
 
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    const labels = [];
-    const wARENH = [];
-    const woARENH = [];
+      const labels = data.map(row => row.Date);
+      const wARENHDatas = data.map(row => row.wARENH);
+      const woARENHDatas = data.map(row => row.woARENH);
 
-    data.forEach(row => {
-      labels.push(row.Time);
-      wARENH.push(parseFloat(row.wARENH));
-      woARENH.push(parseFloat(row.woARENH));
-    });
-
-    const ctx = document.getElementById('papernestChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Avec ARENH',
-            data: wARENH,
-            borderColor: '#0fc4b2',
-            backgroundColor: 'rgba(15, 196, 178, 0.1)',
-            borderWidth: 3,
-            tension: 0.3,
-            fill: true
-          },
-          {
-            label: 'Sans ARENH',
-            data: woARENH,
-            borderColor: '#ff6c95',
-            backgroundColor: 'rgba(255, 108, 149, 0.1)',
-            borderWidth: 3,
-            tension: 0.3,
-            fill: true
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              color: '#333',
-              font: {
-                size: 14
+      const ctx = document.getElementById("graphique").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "wARENH",
+              data: wARENHDatas,
+              borderColor: "#5a52ff",
+              backgroundColor: "#5a52ff33",
+              borderWidth: 3,
+              fill: false,
+              tension: 0.3
+            },
+            {
+              label: "woARENH",
+              data: woARENHDatas,
+              borderColor: "#0fc4b2",
+              backgroundColor: "#0fc4b233",
+              borderWidth: 3,
+              fill: false,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                font: {
+                  size: 14
+                }
               }
             }
           },
-          tooltip: {
-            mode: 'index',
-            intersect: false
-          }
-        },
-        interaction: {
-          mode: 'nearest',
-          axis: 'x',
-          intersect: false
-        },
-        scales: {
-          x: {
-            ticks: { color: '#5a52ff' },
-            title: {
-              display: true,
-              text: 'Semestres',
-              color: '#5a52ff'
-            }
-          },
-          y: {
-            ticks: { color: '#5a52ff' },
-            title: {
-              display: true,
-              text: 'Prix en c€/kWh',
-              color: '#5a52ff'
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'Valeurs',
+                font: {
+                  size: 14
+                }
+              }
             },
-            beginAtZero: false
+            x: {
+              title: {
+                display: true,
+                text: 'Semestre',
+                font: {
+                  size: 14
+                }
+              }
+            }
           }
         }
-      }
-    });
-  })
-  .catch(error => {
-    console.error("Erreur lors du chargement des données :", error);
-  });
-</script>
+      });
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>
+
 
