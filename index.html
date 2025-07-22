@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Graphe wARENH vs woARENH</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="margin: 0; padding: 40px; font-family: 'Segoe UI', sans-serif; background-color: #ffffff; color: #333;">
+  <div style="max-width: 900px; margin: auto; padding: 30px; border-radius: 20px; background: #f9f9f9; box-shadow: 0 0 15px rgba(0,0,0,0.05);">
+    <h2 style="text-align: center; color: #5a52ff;">📊 Evolution des valeurs wARENH et woARENH</h2>
+    <canvas id="chart" style="max-width: 100%; height: auto;"></canvas>
+  </div>
+
+  <script>
+    async function fetchData() {
+      const response = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQx6EhytRbWApgeu6Xzrx9rB-ljbk5rmDNb1zTpNA04gPbw5_1J5nsU4iLDymQ0ymGWgc4iPELmseN4/pub?gid=1717395148&single=true&output=csv");
+      const data = await response.text();
+
+      const rows = data.split("\n").slice(1);
+      const labels = [];
+      const wARENH = [];
+      const woARENH = [];
+
+      rows.forEach(row => {
+        const cols = row.split(",");
+        labels.push(cols[0]);
+        wARENH.push(parseFloat(cols[1]));
+        woARENH.push(parseFloat(cols[2]));
+      });
+
+      return { labels, wARENH, woARENH };
+    }
+
+    fetchData().then(data => {
+      const ctx = document.getElementById("chart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.labels,
+          datasets: [
+            {
+              label: "wARENH",
+              data: data.wARENH,
+              borderColor: "#0fc4b2",
+              backgroundColor: "rgba(15, 196, 178, 0.2)",
+              fill: true,
+              tension: 0.3
+            },
+            {
+              label: "woARENH",
+              data: data.woARENH,
+              borderColor: "#ff6c95",
+              backgroundColor: "rgba(255, 108, 149, 0.2)",
+              fill: true,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                color: "#333"
+              }
+            },
+            title: {
+              display: false
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: "#333"
+              }
+            },
+            y: {
+              ticks: {
+                color: "#333"
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
