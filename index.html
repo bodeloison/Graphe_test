@@ -1,107 +1,134 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Graphique ARENH</title>
+  <meta charset="UTF-8">
+  <title>Évolution des valeurs wARENH et woARENH</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #fff;
       margin: 0;
-      padding: 40px;
-      color: #1c1c1c;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #ffffff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
+
     .container {
-      max-width: 1000px;
-      margin: auto;
       background: #f9f9f9;
-      padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      padding: 40px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      max-width: 900px;
+      width: 100%;
     }
-    h1 {
+
+    h2 {
       text-align: center;
       color: #5a52ff;
-      font-size: 24px;
+      font-size: 28px;
       margin-bottom: 40px;
     }
+
     canvas {
       max-width: 100%;
+      height: auto;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📊 Évolution des valeurs wARENH et woARENH</h1>
-    <canvas id="myChart"></canvas>
+    <h2>📊 Évolution des valeurs wARENH et woARENH</h2>
+    <canvas id="graphCanvas"></canvas>
   </div>
 
   <script>
-    fetch("https://script.google.com/macros/s/AKfycbxIqA1HjBZH_MjPl7PtDDoSnAMT5YEgX9MZo6j5aqniq-Ljz69070q61tzk6jQUCa0/exec")
-      .then(response => response.json())
-      .then(data => {
-        const labels = data.map(row => row.Date);
-        const wARENH = data.map(row => parseFloat(row.wARENH));
-        const woARENH = data.map(row => parseFloat(row.woARENH));
+    async function fetchData() {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbw6Qq8nng7mKnoT9C_LCmpvd6JekQTYe9WMl5LWjubq5itj-nsPDPSxYem9TKs3Ddhn/exec");
+      const data = await response.json();
 
-        const ctx = document.getElementById("myChart").getContext("2d");
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "wARENH",
-                data: wARENH,
-                borderColor: "#0fc4b2",
-                backgroundColor: "rgba(15, 196, 178, 0.2)",
-                tension: 0.3,
-                fill: true,
-              },
-              {
-                label: "woARENH",
-                data: woARENH,
-                borderColor: "#ff6c95",
-                backgroundColor: "rgba(255, 108, 149, 0.2)",
-                tension: 0.3,
-                fill: true,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: "top",
-                labels: {
-                  color: "#1c1c1c",
-                  font: {
-                    size: 14,
-                  },
-                },
-              },
+      const labels = data.map(item => item.date);
+      const wARENH = data.map(item => parseFloat(item.wARENH));
+      const woARENH = data.map(item => parseFloat(item.woARENH));
+
+      const ctx = document.getElementById("graphCanvas").getContext("2d");
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "wARENH",
+              data: wARENH,
+              borderColor: "#5a52ff",
+              backgroundColor: "rgba(90, 82, 255, 0.1)",
+              tension: 0.4,
+              fill: true,
             },
-            scales: {
-              x: {
-                ticks: {
-                  color: "#1c1c1c",
-                },
-              },
-              y: {
-                ticks: {
-                  color: "#1c1c1c",
-                },
-              },
+            {
+              label: "woARENH",
+              data: woARENH,
+              borderColor: "#0fc4b2",
+              backgroundColor: "rgba(15, 196, 178, 0.1)",
+              tension: 0.4,
+              fill: true,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: "#333",
+                font: {
+                  size: 14
+                }
+              }
             },
+            tooltip: {
+              mode: "index",
+              intersect: false,
+              backgroundColor: "#ff6c95",
+              titleColor: "#fff",
+              bodyColor: "#fff"
+            }
           },
-        });
-      })
-      .catch(error => {
-        console.error("Erreur lors du chargement des données :", error);
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Date",
+                color: "#333"
+              },
+              ticks: {
+                color: "#666"
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Valeurs",
+                color: "#333"
+              },
+              ticks: {
+                color: "#666"
+              },
+              beginAtZero: true
+            }
+          }
+        }
       });
+    }
+
+    fetchData();
   </script>
 </body>
 </html>
+
 
